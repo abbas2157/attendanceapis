@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - BMS Admin{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; height: 80vh;">
+    <div class="card" style="width: 100%; max-width: 400px;">
+        <h2 style="text-align: center; margin-top: 0;">Admin Login</h2>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div style="background: rgba(239, 68, 68, 0.2); color: #EF4444; padding: 10px; border-radius: 4px; margin-bottom: 1rem; text-align: center;">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="{% url 'panel_login' %}">
+            {% csrf_token %}
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted);">Username</label>
+                <input type="text" name="username" required style="width: 100%; padding: 0.75rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: white; border-radius: 4px; box-sizing: border-box;">
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted);">Password</label>
+                <input type="password" name="password" required style="width: 100%; padding: 0.75rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: white; border-radius: 4px; box-sizing: border-box;">
+            </div>
+
+            <button type="submit" class="btn" style="width: 100%;">Login to Dashboard</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

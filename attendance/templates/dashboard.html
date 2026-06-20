@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - BMS Admin{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1 style="margin: 0;">System Overview</h1>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="card" style="margin-bottom: 0;">
+        <h3 style="color: var(--primary); margin-top: 0;">Total Employees</h3>
+        <p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ stats.total_employees }}</p>
+    </div>
+    <div class="card" style="margin-bottom: 0;">
+        <h3 style="color: #10B981; margin-top: 0;">Present Today</h3>
+        <p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ stats.present_today }}</p>
+    </div>
+    <div class="card" style="margin-bottom: 0;">
+        <h3 style="color: #EF4444; margin-top: 0;">Absent</h3>
+        <p style="font-size: 2.5rem; font-weight: bold; margin: 0;">{{ stats.absent }}</p>
+    </div>
+</div>
+
+<div class="card">
+    <h2 style="margin-top: 0;">Recent Attendance Records</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Employee</th>
+                <th>Check In</th>
+                <th>Check Out</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in recent_records %}
+            <tr>
+                <td>{{ rec.date }}</td>
+                <td><strong>{{ rec.employee.name }}</strong> ({{ rec.employee.employeecode }})</td>
+                <td>{{ rec.timein|date:"H:i A"|default:"-" }}</td>
+                <td>{{ rec.fulltimeout|date:"H:i A"|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" style="text-align: center; color: var(--text-muted);">No records found for today.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

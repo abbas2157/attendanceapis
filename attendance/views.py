@@ -1205,3 +1205,56 @@ class DashboardStatsView(APIView):
             "recent_activity": recent_activity,
             "last_updated": timezone.localtime(timezone.now()).strftime("%I:%M:%S %p"),
         })
+
+# =========================================================
+# DJANGO HTML ADMIN PANEL VIEWS
+# =========================================================
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+def panel_login(request):
+    if request.user.is_authenticated and request.user.is_staff:
+        next_url = request.GET.get('next')
+        if next_url:
+            return redirect(next_url)
+        return redirect('panel_dashboard')
+        
+    if request.method == 'POST':
+        u = request.POST.get('username')
+        p = request.POST.get('password')
+        user = authenticate(request, username=u, password=p)
+        if user is not None:
+            if user.is_staff:
+                login(request, user)
+                next_url = request.GET.get('next')
+                if next_url:
+                    return redirect(next_url)
+                return redirect('panel_dashboard')
+            else:
+                messages.error(request, "You do not have admin privileges.")
+        else:
+            messages.error(request, "Invalid username or password.")
+            
+    return render(request, 'login.html')
+
+@login_required(login_url='panel_login')
+def panel_dashboard(request):
+    today = timezone.localdate()
+    total_emp = RegisteredEmployee.objects.count()
+    present_today = EmployeeAttendanceApp.objects.filter(date=today).count()
+    
+    stats = {
+        'total_employees': total_emp,
+        'present_today': present_today,
+        'absent': total_emp - present_today,
+    }
+    
+    recent_records = EmployeeAttendanceApp.objects.filter(date=today).order_by('-timein')[:10]
+    
+    return render(request, 'dashboard.html', {'stats': stats, 'recent_records': recent_records})
+
+def panel_logout(request):
+    logout(request)
+    return redirect('panel_login')
